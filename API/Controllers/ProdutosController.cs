@@ -12,7 +12,7 @@ public class ProdutosController(AppDbContext context) : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> GetProdutos()
     {
-        var produtos = context.Produtos.ToList();
+        var produtos = context.Produtos.AsNoTracking().ToList();
 
         if (produtos is null)
         {
