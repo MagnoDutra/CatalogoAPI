@@ -10,9 +10,9 @@ namespace API.Controllers;
 public class ProdutosController(AppDbContext context) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<IEnumerable<Produto>> GetProdutos()
+    public async Task<ActionResult<IEnumerable<Produto>>> GetProdutosAsync()
     {
-        var produtos = context.Produtos.AsNoTracking().ToList();
+        var produtos = await context.Produtos.AsNoTracking().ToListAsync();
 
         if (produtos is null)
         {
@@ -22,10 +22,10 @@ public class ProdutosController(AppDbContext context) : ControllerBase
         return produtos;
     }
 
-    [HttpGet("{id:int}", Name = "ObterProduto")]
-    public ActionResult<Produto> GetProduto(int id)
+    [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
+    public async Task<ActionResult<Produto>> GetProdutoAsync(int id)
     {
-        var produto = context.Produtos.FirstOrDefault(produto => produto.ProdutoId == id);
+        var produto = await context.Produtos.AsNoTracking().FirstOrDefaultAsync(produto => produto.ProdutoId == id);
 
         if (produto is null) return NotFound("Produto não encontrado.");
 
