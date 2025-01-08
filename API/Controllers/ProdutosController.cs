@@ -1,6 +1,7 @@
 using API.Context;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -12,31 +13,58 @@ public class ProdutosController(AppDbContext context) : ControllerBase
     public ActionResult<IEnumerable<Produto>> GetProdutos()
     {
         var produtos = context.Produtos.ToList();
+
+        if (produtos is null)
+        {
+            return NotFound();
+        }
+
         return produtos;
     }
 
-    [HttpGet("{id:int}")]
-    public string GetProduto(int id)
+    [HttpGet("{id:int}", Name = "ObterProduto")]
+    public ActionResult<Produto> GetProduto(int id)
     {
-        return $"Get {id} produto route ";
+        var produto = context.Produtos.FirstOrDefault(produto => produto.ProdutoId == id);
+
+        if (produto is null) return NotFound("Produto não encontrado.");
+
+        return produto;
     }
 
     [HttpPost]
-    public string PostProduto()
+    public ActionResult PostProduto(Produto produto)
     {
-        return "Post route";
+        if (produto is null) return BadRequest();
+
+        context.Produtos.Add(produto);
+        context.SaveChanges();
+
+        return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
     }
 
     [HttpPut("{id:int}")]
-    public string PutProduto(int id)
+    public ActionResult PutProduto(int id, Produto produto)
     {
-        return "Put route";
+        if (produto.ProdutoId != id) return BadRequest();
+
+        context.Entry(produto).State = EntityState.Modified;
+        context.SaveChanges();
+
+        return Ok(produto);
     }
 
     [HttpDelete("{id:int}")]
-    public string DeleteProduto(int id)
+    public ActionResult DeleteProduto(int id)
     {
-        return "Delete route";
+        var produto = context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+
+        if (produto is null) return NotFound("Produto não localizado...");
+
+        context.Produtos.Remove(produto);
+        context.SaveChanges();
+
+        return Ok(produto);
     }
 
 }
