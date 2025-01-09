@@ -1,5 +1,6 @@
 using API.Context;
 using API.Models;
+using API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -76,5 +77,11 @@ public class CategoriasController(AppDbContext context) : ControllerBase
         context.SaveChanges();
 
         return Ok(categoria);
+    }
+
+    [HttpGet("{nome}")]
+    public string GetString(IMeuServico meuServico, string nome)
+    {
+        return meuServico.Saudacao(nome);
     }
 }
