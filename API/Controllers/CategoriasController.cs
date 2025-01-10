@@ -9,7 +9,7 @@ namespace API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CategoriasController(AppDbContext context) : ControllerBase
+public class CategoriasController(AppDbContext context, IConfiguration config) : ControllerBase
 {
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetCategorias()
@@ -19,6 +19,17 @@ public class CategoriasController(AppDbContext context) : ControllerBase
         if (categorias is null) return NotFound();
 
         return categorias;
+    }
+
+    [HttpGet("lerArquivo")]
+    public string GetValores()
+    {
+        var valor1 = config["chave1"];
+        var valor2 = config["chave2"];
+
+        var secao1 = config["secao1:chave2"];
+
+        return $"valor da chave 1: {valor1}, valor da chave 2: {valor2}, valor da secao com a chave 2: {secao1}";
     }
 
 
