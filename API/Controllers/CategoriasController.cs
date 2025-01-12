@@ -1,4 +1,5 @@
 using API.Context;
+using API.Filters;
 using API.Models;
 using API.Services;
 using Microsoft.AspNetCore.Http;
@@ -12,25 +13,20 @@ namespace API.Controllers;
 public class CategoriasController(AppDbContext context, IConfiguration config) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<IEnumerable<Categoria>> GetCategorias()
+    [ServiceFilter(typeof(ApiLoggingFilter))]
+    public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
     {
-        var categorias = context.Categorias.ToList();
-
-        if (categorias is null) return NotFound();
-
-        return categorias;
+        try
+        {
+            var categorias = await context.Categorias.AsNoTracking().ToListAsync();
+            return Ok(categorias);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar obter as categorias");
+        }
     }
 
-    [HttpGet("lerArquivo")]
-    public string GetValores()
-    {
-        var valor1 = config["chave1"];
-        var valor2 = config["chave2"];
-
-        var secao1 = config["secao1:chave2"];
-
-        return $"valor da chave 1: {valor1}, valor da chave 2: {valor2}, valor da secao com a chave 2: {secao1}";
-    }
 
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
