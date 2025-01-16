@@ -1,6 +1,7 @@
 using API.Context;
 using API.Filters;
 using API.Models;
+using API.Repositories;
 using API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,85 +11,79 @@ namespace API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CategoriasController(AppDbContext context, IConfiguration config) : ControllerBase
+public class CategoriasController(ICategoriaRepository repository, ILogger logger) : ControllerBase
 {
     [HttpGet]
-    [ServiceFilter(typeof(ApiLoggingFilter))]
-    public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
+    public ActionResult<IEnumerable<Categoria>> GetCategorias()
     {
-        try
-        {
-            var categorias = await context.Categorias.AsNoTracking().ToListAsync();
-            return Ok(categorias);
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar obter as categorias");
-        }
+
+        var categorias = repository.GetCategorias();
+        return Ok(categorias);
     }
-
-
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> GetCategoria(int id)
     {
-        var categoria = context.Categorias.FirstOrDefault(cat => cat.CategoriaId == id);
+        var categoria = repository.GetCategoriaById(id);
 
-        if (categoria is null) return NotFound();
+        if (categoria is null)
+        {
+            logger.LogWarning($"Categoria com id {id} não encontrada");
+            return NotFound($"Categoria com id {id} não encontrada");
+        }
 
         return Ok(categoria);
     }
 
-    // GET
-    [HttpGet("produtos")]
-    public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
-    {
-        var categorias = context.Categorias.Include(cat => cat.Produtos).ToList();
+    // [HttpGet("produtos")]
+    // public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+    // {
+    //     var categorias = context.Categorias.Include(cat => cat.Produtos).ToList();
 
-        if (categorias is null) return NotFound();
+    //     if (categorias is null) return NotFound();
 
-        return Ok(categorias);
-    }
-
+    //     return Ok(categorias);
+    // }
 
     [HttpPost]
     public ActionResult PostCategoria(Categoria categoria)
     {
-        if (categoria is null) return BadRequest();
+        if (categoria is null)
+        {
+            logger.LogWarning("Dados inválidos");
+            return BadRequest("Dados inválidos");
+        }
 
-        context.Categorias.Add(categoria);
-        context.SaveChanges();
+        var novaCategoria = repository.Create(categoria);
 
-        return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
+        return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoria.CategoriaId }, novaCategoria);
     }
 
     [HttpPut("{id:int}")]
     public ActionResult PutCategoria(int id, Categoria categoria)
     {
-        if (categoria.CategoriaId != id) return BadRequest();
+        if (categoria.CategoriaId != id)
+        {
+            logger.LogWarning("Id da requisição difere do id da categoria");
+            return BadRequest("Id da requisição difere do id da categoria");
+        }
 
-        context.Entry(categoria).State = EntityState.Modified;
-        context.SaveChanges();
-
+        repository.Update(categoria);
         return Ok(categoria);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult<Categoria> DeleteCategoria(int id)
     {
-        var categoria = context.Categorias.FirstOrDefault(cat => cat.CategoriaId == id);
+        var categoria = repository.GetCategoriaById(id);
 
-        if (categoria == null) return BadRequest();
+        if (categoria == null)
+        {
+            logger.LogWarning($"Categoria com id {id} não encontrada");
+            return BadRequest($"Categoria com id {id} não encontrada");
+        }
 
-        context.Categorias.Remove(categoria);
-        context.SaveChanges();
-
-        return Ok(categoria);
-    }
-
-    [HttpGet("{nome}")]
-    public string GetString(IMeuServico meuServico, string nome)
-    {
-        return meuServico.Saudacao(nome);
+        var categoriaExcluida = repository.Delete(id);
+        return Ok(categoriaExcluida);
     }
 }
