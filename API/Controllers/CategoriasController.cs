@@ -1,17 +1,12 @@
-using API.Context;
-using API.Filters;
 using API.Models;
 using API.Repositories;
-using API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CategoriasController(ICategoriaRepository repository, ILogger logger) : ControllerBase
+public class CategoriasController(ICategoriaRepository repository, ILogger<CategoriasController> logger) : ControllerBase
 {
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetCategorias()
