@@ -26,11 +26,17 @@ public class ProdutosController(IProdutoRepository produtoRepository) : Controll
     [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
     public ActionResult<Produto> GetProduto(int id)
     {
-        var produto = produtoRepository.GetByID(id);
+        var produto = produtoRepository.Get(p => p.ProdutoId == id);
 
         if (produto is null) return NotFound("Produto não encontrado.");
 
         return produto;
+    }
+
+    [HttpGet("categoria/{id:int}")]
+    public ActionResult<IEnumerable<Produto>> GetProdutosByCat(int id)
+    {
+        return Ok(produtoRepository.GetProdutosPorCategoria(id));
     }
 
     [HttpPost]
@@ -48,27 +54,21 @@ public class ProdutosController(IProdutoRepository produtoRepository) : Controll
     {
         if (produto.ProdutoId != id) return BadRequest();
 
-        bool atualizado = produtoRepository.Update(produto);
+        produtoRepository.Update(produto);
 
-        if (atualizado)
-            return Ok(produto);
-        else
-            return StatusCode(500, $"Falha ao atualizar o produto de id = {id}");
+        return Ok(produto);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult DeleteProduto(int id)
     {
-        var produto = produtoRepository.GetByID(id);
+        var produto = produtoRepository.Get(p => p.ProdutoId == id);
 
         if (produto is null) return NotFound("Produto não localizado...");
 
-        bool produtoExcluido = produtoRepository.Delete(id);
+        produtoRepository.Delete(produto);
 
-        if (produtoExcluido)
-            return Ok(produto);
-        else
-            return StatusCode(500, $"Falha ao deletar o produto com id = {id}");
+        return Ok(produto);
     }
 
 }

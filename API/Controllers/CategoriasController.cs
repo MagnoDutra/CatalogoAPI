@@ -12,14 +12,14 @@ public class CategoriasController(ICategoriaRepository repository, ILogger<Categ
     public ActionResult<IEnumerable<Categoria>> GetCategorias()
     {
 
-        var categorias = repository.GetCategorias();
+        var categorias = repository.GetAll();
         return Ok(categorias);
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> GetCategoria(int id)
     {
-        var categoria = repository.GetCategoriaById(id);
+        var categoria = repository.Get(cat => cat.CategoriaId == id);
 
         if (categoria is null)
         {
@@ -70,7 +70,7 @@ public class CategoriasController(ICategoriaRepository repository, ILogger<Categ
     [HttpDelete("{id:int}")]
     public ActionResult<Categoria> DeleteCategoria(int id)
     {
-        var categoria = repository.GetCategoriaById(id);
+        var categoria = repository.Get(cat => cat.CategoriaId == id);
 
         if (categoria == null)
         {
@@ -78,7 +78,7 @@ public class CategoriasController(ICategoriaRepository repository, ILogger<Categ
             return BadRequest($"Categoria com id {id} não encontrada");
         }
 
-        var categoriaExcluida = repository.Delete(id);
+        var categoriaExcluida = repository.Delete(categoria);
         return Ok(categoriaExcluida);
     }
 }
