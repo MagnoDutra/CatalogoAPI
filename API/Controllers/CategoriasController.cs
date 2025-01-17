@@ -6,7 +6,7 @@ namespace API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CategoriasController(ICategoriaRepository repository, ILogger<CategoriasController> logger) : ControllerBase
+public class CategoriasController(IRepository<Categoria> repository, ILogger<CategoriasController> logger) : ControllerBase
 {
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetCategorias()

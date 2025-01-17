@@ -36,7 +36,14 @@ public class ProdutosController(IProdutoRepository produtoRepository) : Controll
     [HttpGet("categoria/{id:int}")]
     public ActionResult<IEnumerable<Produto>> GetProdutosByCat(int id)
     {
-        return Ok(produtoRepository.GetProdutosPorCategoria(id));
+        var produtos = produtoRepository.GetProdutosPorCategoria(id);
+
+        if (produtos is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(produtos);
     }
 
     [HttpPost]
