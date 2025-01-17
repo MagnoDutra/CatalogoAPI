@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using API.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories;
 
@@ -15,7 +16,7 @@ public class Repository<T> : IRepository<T> where T : class
 
   public IEnumerable<T> GetAll()
   {
-    return context.Set<T>().ToList();
+    return context.Set<T>().AsNoTracking().ToList();
   }
 
   public T? Get(Expression<Func<T, bool>> predicate)
@@ -26,21 +27,21 @@ public class Repository<T> : IRepository<T> where T : class
   public T Create(T entity)
   {
     context.Set<T>().Add(entity);
-    context.SaveChanges();
+    // context.SaveChanges();
     return entity;
   }
 
   public T Update(T entity)
   {
     context.Set<T>().Update(entity);
-    context.SaveChanges();
+    // context.SaveChanges();
     return entity;
   }
 
   public T Delete(T entity)
   {
     context.Set<T>().Remove(entity);
-    context.SaveChanges();
+    // context.SaveChanges();
     return entity;
   }
 }

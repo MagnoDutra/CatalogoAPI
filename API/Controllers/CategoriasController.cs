@@ -6,20 +6,20 @@ namespace API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CategoriasController(IRepository<Categoria> repository, ILogger<CategoriasController> logger) : ControllerBase
+public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController> logger) : ControllerBase
 {
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> GetCategorias()
     {
 
-        var categorias = repository.GetAll();
+        var categorias = uof.CategoriaRepository.GetAll();
         return Ok(categorias);
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> GetCategoria(int id)
     {
-        var categoria = repository.Get(cat => cat.CategoriaId == id);
+        var categoria = uof.CategoriaRepository.Get(cat => cat.CategoriaId == id);
 
         if (categoria is null)
         {
@@ -49,7 +49,8 @@ public class CategoriasController(IRepository<Categoria> repository, ILogger<Cat
             return BadRequest("Dados inválidos");
         }
 
-        var novaCategoria = repository.Create(categoria);
+        var novaCategoria = uof.CategoriaRepository.Create(categoria);
+        uof.Commit();
 
         return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoria.CategoriaId }, novaCategoria);
     }
@@ -63,14 +64,15 @@ public class CategoriasController(IRepository<Categoria> repository, ILogger<Cat
             return BadRequest("Id da requisição difere do id da categoria");
         }
 
-        repository.Update(categoria);
+        uof.CategoriaRepository.Update(categoria);
+        uof.Commit();
         return Ok(categoria);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult<Categoria> DeleteCategoria(int id)
     {
-        var categoria = repository.Get(cat => cat.CategoriaId == id);
+        var categoria = uof.CategoriaRepository.Get(cat => cat.CategoriaId == id);
 
         if (categoria == null)
         {
@@ -78,7 +80,8 @@ public class CategoriasController(IRepository<Categoria> repository, ILogger<Cat
             return BadRequest($"Categoria com id {id} não encontrada");
         }
 
-        var categoriaExcluida = repository.Delete(categoria);
+        var categoriaExcluida = uof.CategoriaRepository.Delete(categoria);
+        uof.Commit();
         return Ok(categoriaExcluida);
     }
 }
