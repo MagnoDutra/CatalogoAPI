@@ -59,12 +59,12 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
 
         var categoria = categoriaDto.ToCategoria();
 
-        var novaCategoria = uof.CategoriaRepository.Create(categoria);
+        var novaCategoria = uof.CategoriaRepository.Create(categoria!);
         uof.Commit();
 
         var novaCategoriaDto = novaCategoria.ToCategoriaDTO();
 
-        return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDto.CategoriaId }, novaCategoriaDto);
+        return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDto!.CategoriaId }, novaCategoriaDto);
     }
 
     [HttpPut("{id:int}")]
@@ -78,10 +78,10 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
 
         var categoria = categoriaDto.ToCategoria();
 
-        uof.CategoriaRepository.Update(categoria);
+        uof.CategoriaRepository.Update(categoria!);
         uof.Commit();
 
-        var categoriaDtoAtualizada = categoria.ToCategoriaDTO();
+        var categoriaDtoAtualizada = categoria!.ToCategoriaDTO();
 
         return Ok(categoriaDtoAtualizada);
     }

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using API.Context;
+using API.DTOs.Mappings;
 using API.Extensions;
 using API.Filters;
 using API.Logging;
@@ -30,6 +31,8 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddAutoMapper(typeof(ProdutoDTOMappingProfile));
 
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration { LogLevel = LogLevel.Information }));
 
