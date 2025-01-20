@@ -21,6 +21,20 @@ public class ProdutosController(IUnitOfWork uof, IMapper mapper) : ControllerBas
     {
         var produtos = uof.ProdutoRepository.GetProdutos(produtosParameter);
 
+        return ObterProdutos(produtos);
+    }
+
+    //Exercicio Filtro
+    [HttpGet("filter/preco/pagination")]
+    public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFilterPreco([FromQuery] ProdutosFiltroPreco produtosFiltroPreco)
+    {
+        var produtos = uof.ProdutoRepository.GetProdutosFiltroPreco(produtosFiltroPreco);
+
+        return ObterProdutos(produtos);
+    }
+
+    private ActionResult<IEnumerable<ProdutoDTO>> ObterProdutos(PagedList<Produto> produtos)
+    {
         var metadata = new
         {
             produtos.TotalCount,
