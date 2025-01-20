@@ -1,6 +1,7 @@
 using API.Context;
 using API.DTOs;
 using API.Models;
+using API.Pagination;
 using API.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
@@ -13,6 +14,17 @@ namespace API.Controllers;
 [ApiController]
 public class ProdutosController(IUnitOfWork uof, IMapper mapper) : ControllerBase
 {
+    //Exercicio de paginação
+    [HttpGet("pagination")]
+    public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameter)
+    {
+        var produtos = uof.ProdutoRepository.GetProdutos(produtosParameter);
+
+        var produtosDto = mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
+
+        return Ok(produtosDto);
+    }
+
     [HttpGet]
     public ActionResult<IEnumerable<ProdutoDTO>> GetProdutos()
     {
