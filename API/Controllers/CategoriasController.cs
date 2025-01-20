@@ -1,8 +1,11 @@
 using API.DTOs;
 using API.Extensions;
 using API.Models;
+using API.Pagination;
 using API.Repositories;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace API.Controllers;
 
@@ -16,6 +19,28 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
         var categorias = uof.CategoriaRepository.GetAll();
 
         if (categorias is null) return NotFound("Não existem categorias...");
+
+        var categoriasDto = categorias.ToCategoriaDTOList();
+
+        return Ok(categoriasDto);
+    }
+
+    [HttpGet("pagination")]
+    public ActionResult<IEnumerable<CategoriaDTO>> GetCategorias([FromQuery] CategoriasParameters paginationParams)
+    {
+        var categorias = uof.CategoriaRepository.GetCategorias(paginationParams);
+
+        var metadata = new
+        {
+            categorias.TotalCount,
+            categorias.PageSize,
+            categorias.CurrentPage,
+            categorias.TotalPages,
+            categorias.HasNext,
+            categorias.HasPrevious
+        };
+
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
 
         var categoriasDto = categorias.ToCategoriaDTOList();
 
