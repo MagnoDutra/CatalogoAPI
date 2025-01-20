@@ -6,9 +6,12 @@ namespace API.Repositories;
 
 public class ProdutoRepository(AppDbContext context) : Repository<Produto>(context), IProdutoRepository
 {
-  public IEnumerable<Produto> GetProdutos(ProdutosParameters produtosParams)
+  public PagedList<Produto> GetProdutos(ProdutosParameters produtosParams)
   {
-    return GetAll().OrderBy(on => on.Nome).Skip((produtosParams.PageNumber - 1) * produtosParams.PageSize).Take(produtosParams.PageSize).ToList();
+    var produtos = GetAll().OrderBy(on => on.Nome).AsQueryable();
+    var paginaProdutosOrdenada = PagedList<Produto>.ToPagedList(produtos, produtosParams.PageNumber, produtosParams.PageSize);
+
+    return paginaProdutosOrdenada;
   }
 
   public IEnumerable<Produto> GetProdutosPorCategoria(int categoriaID)
