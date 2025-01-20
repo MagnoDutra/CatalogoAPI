@@ -7,4 +7,5 @@ namespace API.Repositories;
 public interface ICategoriaRepository : IRepository<Categoria>
 {
   public PagedList<Categoria> GetCategorias(CategoriasParameters categoriaParams);
+  public PagedList<Categoria> GetCategoriaFilterNome(CategoriaFiltroNome categoriaFilterParam);
 }

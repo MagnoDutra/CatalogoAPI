@@ -30,6 +30,11 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     {
         var categorias = uof.CategoriaRepository.GetCategorias(paginationParams);
 
+        return ObterCategorias(categorias);
+    }
+
+    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(PagedList<Categoria> categorias)
+    {
         var metadata = new
         {
             categorias.TotalCount,
@@ -45,6 +50,14 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
         var categoriasDto = categorias.ToCategoriaDTOList();
 
         return Ok(categoriasDto);
+    }
+
+    [HttpGet("filtro/nome/pagination")]
+    public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasFilter([FromQuery] CategoriaFiltroNome catFilterParams)
+    {
+        var categorias = uof.CategoriaRepository.GetCategoriaFilterNome(catFilterParams);
+
+        return ObterCategorias(categorias);
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
