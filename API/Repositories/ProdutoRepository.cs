@@ -1,21 +1,22 @@
 using API.Context;
 using API.Models;
 using API.Pagination;
+using X.PagedList;
 
 namespace API.Repositories;
 
 public class ProdutoRepository(AppDbContext context) : Repository<Produto>(context), IProdutoRepository
 {
-  public async Task<PagedList<Produto>> GetProdutosAsync(ProdutosParameters produtosParams)
+  public async Task<IPagedList<Produto>> GetProdutosAsync(ProdutosParameters produtosParams)
   {
     var produtos = await GetAllAsync();
-    var pdorutosOrdenados = produtos.OrderBy(on => on.Nome).AsQueryable();
-    var paginaProdutosOrdenada = PagedList<Produto>.ToPagedList(pdorutosOrdenados, produtosParams.PageNumber, produtosParams.PageSize);
+    var produtosOrdenados = produtos.OrderBy(on => on.Nome).AsQueryable();
+    var paginaProdutosOrdenada = await produtosOrdenados.ToPagedListAsync(produtosParams.PageNumber, produtosParams.PageSize);
 
     return paginaProdutosOrdenada;
   }
 
-  public async Task<PagedList<Produto>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco prodParams)
+  public async Task<IPagedList<Produto>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco prodParams)
   {
     var produtos = await GetAllAsync();
 
@@ -29,7 +30,7 @@ public class ProdutoRepository(AppDbContext context) : Repository<Produto>(conte
         produtos = produtos.Where(p => p.Preco == prodParams.Preco.Value).OrderBy(p => p.Preco);
     }
 
-    var produtosFiltrados = PagedList<Produto>.ToPagedList(produtos.AsQueryable(), prodParams.PageNumber, prodParams.PageSize);
+    var produtosFiltrados = await produtos.ToPagedListAsync(prodParams.PageNumber, prodParams.PageSize);
 
     return produtosFiltrados;
   }
