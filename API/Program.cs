@@ -6,6 +6,7 @@ using API.Filters;
 using API.Logging;
 using API.Repositories;
 using API.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,8 @@ builder.Services.AddControllers(options =>
 }).AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer();
