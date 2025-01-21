@@ -11,7 +11,7 @@ public class TesteAttribute : ValidationAttribute
       return ValidationResult.Success;
     }
 
-    var primeiraLetra = value.ToString()[0].ToString();
+    var primeiraLetra = value.ToString()![0].ToString();
     if (primeiraLetra != primeiraLetra.ToUpper())
     {
       return new ValidationResult("A Primeira letra do nome tem que ser maiuscula");

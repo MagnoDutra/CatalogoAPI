@@ -14,9 +14,9 @@ namespace API.Controllers;
 public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController> logger) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<IEnumerable<CategoriaDTO>> GetCategorias()
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategorias()
     {
-        var categorias = uof.CategoriaRepository.GetAllAsync();
+        var categorias = await uof.CategoriaRepository.GetAllAsync();
 
         if (categorias is null) return NotFound("Não existem categorias...");
 
@@ -26,9 +26,9 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     }
 
     [HttpGet("pagination")]
-    public ActionResult<IEnumerable<CategoriaDTO>> GetCategorias([FromQuery] CategoriasParameters paginationParams)
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasAsync([FromQuery] CategoriasParameters paginationParams)
     {
-        var categorias = uof.CategoriaRepository.GetCategorias(paginationParams);
+        var categorias = await uof.CategoriaRepository.GetCategoriasAsync(paginationParams);
 
         return ObterCategorias(categorias);
     }
@@ -53,17 +53,17 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     }
 
     [HttpGet("filtro/nome/pagination")]
-    public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasFilter([FromQuery] CategoriaFiltroNome catFilterParams)
+    public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasFilter([FromQuery] CategoriaFiltroNome catFilterParams)
     {
-        var categorias = uof.CategoriaRepository.GetCategoriaFilterNome(catFilterParams);
+        var categorias = await uof.CategoriaRepository.GetCategoriaFilterNomeAsync(catFilterParams);
 
         return ObterCategorias(categorias);
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
-    public ActionResult<CategoriaDTO> GetCategoria(int id)
+    public async Task<ActionResult<CategoriaDTO>> GetCategoria(int id)
     {
-        var categoria = uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
+        var categoria = await uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
 
         if (categoria is null)
         {
@@ -87,7 +87,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     // }
 
     [HttpPost]
-    public ActionResult<CategoriaDTO> PostCategoria(CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> PostCategoria(CategoriaDTO categoriaDto)
     {
         if (categoriaDto is null)
         {
@@ -98,7 +98,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
         var categoria = categoriaDto.ToCategoria();
 
         var novaCategoria = uof.CategoriaRepository.Create(categoria!);
-        uof.Commit();
+        await uof.CommitAsync();
 
         var novaCategoriaDto = novaCategoria.ToCategoriaDTO();
 
@@ -106,7 +106,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<CategoriaDTO> PutCategoria(int id, CategoriaDTO categoriaDto)
+    public async Task<ActionResult<CategoriaDTO>> PutCategoria(int id, CategoriaDTO categoriaDto)
     {
         if (categoriaDto.CategoriaId != id)
         {
@@ -117,7 +117,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
         var categoria = categoriaDto.ToCategoria();
 
         uof.CategoriaRepository.Update(categoria!);
-        uof.Commit();
+        await uof.CommitAsync();
 
         var categoriaDtoAtualizada = categoria!.ToCategoriaDTO();
 
@@ -125,9 +125,9 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult<CategoriaDTO> DeleteCategoria(int id)
+    public async Task<ActionResult<CategoriaDTO>> DeleteCategoria(int id)
     {
-        var categoria = uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
+        var categoria = await uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
 
         if (categoria == null)
         {
@@ -136,7 +136,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
         }
 
         var categoriaExcluida = uof.CategoriaRepository.Delete(categoria);
-        uof.Commit();
+        await uof.CommitAsync();
 
         var categoriaDtoExcluida = categoriaExcluida.ToCategoriaDTO();
 
