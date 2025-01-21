@@ -4,6 +4,7 @@ using API.Models;
 using API.Pagination;
 using API.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using X.PagedList;
@@ -15,6 +16,7 @@ namespace API.Controllers;
 public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController> logger) : ControllerBase
 {
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategorias()
     {
         var categorias = await uof.CategoriaRepository.GetAllAsync();
