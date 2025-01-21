@@ -16,7 +16,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     [HttpGet]
     public ActionResult<IEnumerable<CategoriaDTO>> GetCategorias()
     {
-        var categorias = uof.CategoriaRepository.GetAll();
+        var categorias = uof.CategoriaRepository.GetAllAsync();
 
         if (categorias is null) return NotFound("Não existem categorias...");
 
@@ -63,7 +63,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<CategoriaDTO> GetCategoria(int id)
     {
-        var categoria = uof.CategoriaRepository.Get(cat => cat.CategoriaId == id);
+        var categoria = uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
 
         if (categoria is null)
         {
@@ -127,7 +127,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     [HttpDelete("{id:int}")]
     public ActionResult<CategoriaDTO> DeleteCategoria(int id)
     {
-        var categoria = uof.CategoriaRepository.Get(cat => cat.CategoriaId == id);
+        var categoria = uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
 
         if (categoria == null)
         {

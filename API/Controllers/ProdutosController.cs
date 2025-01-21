@@ -55,7 +55,7 @@ public class ProdutosController(IUnitOfWork uof, IMapper mapper) : ControllerBas
     [HttpGet]
     public ActionResult<IEnumerable<ProdutoDTO>> GetProdutos()
     {
-        var produtos = uof.ProdutoRepository.GetAll();
+        var produtos = uof.ProdutoRepository.GetAllAsync();
 
         if (produtos is null)
         {
@@ -70,7 +70,7 @@ public class ProdutosController(IUnitOfWork uof, IMapper mapper) : ControllerBas
     [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
     public ActionResult<ProdutoDTO> GetProduto(int id)
     {
-        var produto = uof.ProdutoRepository.Get(p => p.ProdutoId == id);
+        var produto = uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
         if (produto is null) return NotFound("Produto não encontrado.");
 
@@ -115,7 +115,7 @@ public class ProdutosController(IUnitOfWork uof, IMapper mapper) : ControllerBas
         if (patchDoc is null || id <= 0)
             return BadRequest();
 
-        var produto = uof.ProdutoRepository.Get(prod => prod.ProdutoId == id);
+        var produto = uof.ProdutoRepository.GetAsync(prod => prod.ProdutoId == id);
 
         if (produto is null)
             return NotFound();
@@ -154,7 +154,7 @@ public class ProdutosController(IUnitOfWork uof, IMapper mapper) : ControllerBas
     [HttpDelete("{id:int}")]
     public ActionResult<ProdutoDTO> DeleteProduto(int id)
     {
-        var produto = uof.ProdutoRepository.Get(p => p.ProdutoId == id);
+        var produto = uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
         if (produto is null) return NotFound("Produto não localizado...");
 
