@@ -4,8 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Context;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
   public DbSet<Categoria>? Categorias { get; set; }
   public DbSet<Produto>? Produtos { get; set; }
+
+  protected override void OnModelCreating(ModelBuilder builder)
+  {
+    base.OnModelCreating(builder);
+  }
 }
