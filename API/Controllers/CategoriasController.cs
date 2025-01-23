@@ -128,6 +128,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<CategoriaDTO>> DeleteCategoria(int id)
     {
         var categoria = await uof.CategoriaRepository.GetAsync(cat => cat.CategoriaId == id);
