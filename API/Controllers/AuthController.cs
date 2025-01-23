@@ -133,7 +133,7 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpPost("revoke/{username:string}")]
+        [HttpPost("revoke/{username}")]
         public async Task<IActionResult> Revoke(string username)
         {
             var user = await userManager.FindByNameAsync(username);
