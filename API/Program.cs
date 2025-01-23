@@ -54,7 +54,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
-// builder.Services.AddAuthentication("Bearer").AddJwtBearer();
 
 var secretKey = builder.Configuration["JWT:SecretKey"] ?? throw new ArgumentException("Invalid secret key!");
 

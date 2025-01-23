@@ -146,5 +146,49 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        [HttpPost]
+        [Route("CreateRole")]
+        public async Task<IActionResult> CreateRole(string roleName)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+
+            if (!roleExist)
+            {
+                var roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+
+                if (roleResult.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = $"Role {roleName} added successfully" });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = $"Issue adding the new {roleName} role" });
+                }
+            }
+            return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Role already exist." });
+        }
+
+        [HttpPost]
+        [Route("AddUserToRole")]
+        public async Task<IActionResult> AddUserToRole(string email, string roleName)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var result = await userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = $"User {user.Email} added to the {roleName} role" });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = $"Error: Unable to add user {user.Email} to the {roleName} role" });
+                }
+            }
+            return BadRequest(new { error = "Unable to find user" });
+        }
     }
 }
