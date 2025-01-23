@@ -53,8 +53,6 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
-builder.Services.AddAuthorization();
-
 var secretKey = builder.Configuration["JWT:SecretKey"] ?? throw new ArgumentException("Invalid secret key!");
 
 builder.Services.AddAuthentication(options =>
@@ -76,6 +74,19 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
+});
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("Admin").RequireClaim("id", "magno"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("ExclusiveOnly",
+                    policy => policy.RequireAssertion(context =>
+                             context.User.HasClaim(claim => claim.Type == "id" &&
+                                                            claim.Value == "magno") ||
+                                                            context.User.IsInRole("SuperAdmin")));
 });
 
 string? mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
