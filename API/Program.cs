@@ -24,15 +24,15 @@ builder.Services.AddControllers(options =>
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 
-var OrigensComAcessoPermitido = "_origensComAcessoPermitido";
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: OrigensComAcessoPermitido,
-                                        policy =>
-                                        {
-                                            policy.WithOrigins("http://www.apirequest.io");
-                                        });
+    options.AddDefaultPolicy(policy =>
+                            {
+                                policy.WithOrigins("http://www.apirequest.io", "https://magno.seila")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials();
+                            });
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -133,7 +133,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors(OrigensComAcessoPermitido);
+app.UseCors();
 
 app.UseAuthorization();
 
