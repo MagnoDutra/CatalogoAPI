@@ -5,6 +5,7 @@ using API.Pagination;
 using API.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using X.PagedList;
@@ -127,6 +128,7 @@ public class CategoriasController(IUnitOfWork uof, ILogger<CategoriasController>
         return Ok(categoriaDtoAtualizada);
     }
 
+    [EnableCors("PoliticaCORS")]
     [HttpDelete("{id:int}")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<CategoriaDTO>> DeleteCategoria(int id)

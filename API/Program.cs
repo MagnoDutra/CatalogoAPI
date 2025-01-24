@@ -33,6 +33,7 @@ builder.Services.AddCors(options =>
                                 .AllowAnyMethod()
                                 .AllowCredentials();
                             });
+    options.AddPolicy("PoliticaCORS", policy => policy.WithOrigins("https//teste.com").WithMethods("GET"));
 });
 
 builder.Services.AddEndpointsApiExplorer();
