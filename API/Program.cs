@@ -143,7 +143,7 @@ builder.Services.AddApiVersioning(o =>
     o.DefaultApiVersion = new ApiVersion(1, 0); // define a versao padrao se nenhuma for especificada no request
     o.AssumeDefaultVersionWhenUnspecified = true; // Se a versao n for especificada a versao padrao eh utilizada
     o.ReportApiVersions = true; // as versoes da api devem ser incluidas no header do response.
-    o.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader());
+    o.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader(), new UrlSegmentApiVersionReader());
 }).AddApiExplorer(options =>
 {   // configuracoes para a documentacao no swagger
     options.GroupNameFormat = "'v'VVV"; // vai ter o caractere v e o numero da versao em seguida
